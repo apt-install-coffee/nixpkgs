@@ -27100,6 +27100,8 @@ with pkgs;
 
   peek = callPackage ../applications/video/peek { };
 
+  peertube = callPackage ../servers/peertube { };
+
   pflask = callPackage ../os-specific/linux/pflask {};
 
   pfsshell = callPackage ../tools/misc/pfsshell { };
