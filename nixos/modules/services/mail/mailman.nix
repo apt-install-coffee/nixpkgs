@@ -6,7 +6,19 @@ let
 
   cfg = config.services.mailman;
 
-  pythonEnv = pkgs.python3.withPackages (ps:
+  python = pkgs.python3.override {
+    packageOverrides = self: super: {
+      sqlalchemy = super.sqlalchemy.overridePythonAttrs (oldAttrs: rec {
+        version = "1.3.24";
+        src = oldAttrs.src.override {
+          inherit version;
+          sha256 = "ebbb777cbf9312359b897bf81ba00dae0f5cb69fba2a18265dcc18a6f5ef7519";
+        };
+      });
+    };
+  };
+
+  pythonEnv = python.withPackages (ps:
     [ps.mailman ps.mailman-web]
     ++ lib.optional cfg.hyperkitty.enable ps.mailman-hyperkitty
     ++ cfg.extraPythonPackages);
@@ -185,7 +197,7 @@ in {
       mailman.layout = "fhs";
 
       "paths.fhs" = {
-        bin_dir = "${pkgs.python3Packages.mailman}/bin";
+        bin_dir = "${python.pkgs.mailman}/bin";
         var_dir = "/var/lib/mailman";
         queue_dir = "$var_dir/queue";
         template_dir = "$var_dir/templates";

@@ -19424,7 +19424,19 @@ in
 
   mackerel-agent = callPackage ../servers/monitoring/mackerel-agent { };
 
-  mailman = callPackage ../servers/mail/mailman/wrapped.nix { };
+  mailman = callPackage ../servers/mail/mailman/wrapped.nix {
+    python3 = python3.override {
+      packageOverrides = self: super: {
+        sqlalchemy = super.sqlalchemy.overridePythonAttrs (oldAttrs: rec {
+          version = "1.3.24";
+          src = oldAttrs.src.override {
+            inherit version;
+            sha256 = "ebbb777cbf9312359b897bf81ba00dae0f5cb69fba2a18265dcc18a6f5ef7519";
+          };
+        });
+      };
+    };
+  };
 
   mailman-rss = callPackage ../development/python-modules/mailman-rss { };
 
