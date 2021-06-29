@@ -1,5 +1,6 @@
 { lib, buildPythonPackage, fetchPypi, aiohttp, pythonOlder
 , sqlalchemy, ruamel_yaml, CommonMark, lxml
+, asyncpg, python-olm, pycryptodome, unpaddedbase64
 }:
 
 buildPythonPackage rec {
@@ -19,6 +20,12 @@ buildPythonPackage rec {
     ruamel_yaml
     CommonMark
     lxml
+
+    # for e2be
+    asyncpg
+    python-olm
+    pycryptodome
+    unpaddedbase64
   ];
 
   disabled = pythonOlder "3.7";
