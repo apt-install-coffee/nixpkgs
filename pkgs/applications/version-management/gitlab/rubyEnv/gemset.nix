@@ -216,15 +216,15 @@
     version = "0.3.0";
   };
   apollo_upload_server = {
-    dependencies = ["graphql" "rails"];
+    dependencies = ["actionpack" "graphql"];
     groups = ["default"];
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0xk54h9mmzhrbgbmk33v38pavb8w6421mx2yrgsdarkfl9fr90y3";
+      sha256 = "0klhppx4vjfdvgz12wb63bcxy5ymk0mp8wkh01fpgjn2l3fwkwz5";
       type = "gem";
     };
-    version = "2.0.2";
+    version = "2.1.0";
   };
   asana = {
     dependencies = ["faraday" "faraday_middleware" "faraday_middleware-multi_json" "oauth2"];
