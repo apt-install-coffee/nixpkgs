@@ -35,6 +35,7 @@ in buildGoModule rec {
   postInstall = ''
     mkdir -p $ruby
     cp -rv $src/ruby/{bin,lib,proto,git-hooks} $ruby
+    mv $out/bin/gitaly-git2go $out/bin/gitaly-git2go-
   '';
 
   outputs = [ "out" "ruby" ];
