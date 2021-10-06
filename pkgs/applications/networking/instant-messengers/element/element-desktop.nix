@@ -4,6 +4,7 @@
 , makeWrapper
 , makeDesktopItem
 , mkYarnPackage
+, fetchYarnDeps
 , electron
 , element-web
 , callPackage
@@ -33,7 +34,10 @@ mkYarnPackage rec {
   inherit version src;
 
   packageJSON = ./element-desktop-package.json;
-  yarnNix = ./element-desktop-yarndeps.nix;
+  offlineCache = fetchYarnDeps {
+    yarnLock = src + "/yarn.lock";
+    sha256 = "sha256-IYSrKqYdVxTDc99LQhqJqJ8CYAhsB+5Po6gbOLlrI4k=";
+  };
 
   nativeBuildInputs = [ makeWrapper ];
 
