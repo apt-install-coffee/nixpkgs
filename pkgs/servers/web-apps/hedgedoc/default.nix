@@ -9,6 +9,7 @@
 , python2
 , nixosTests
 , buildGoModule
+, fetchYarnDeps
 }:
 
 let
@@ -42,7 +43,10 @@ mkYarnPackage rec {
   nativeBuildInputs = [ which makeWrapper ];
   extraBuildInputs = [ python2 esbuild-hedgedoc ];
 
-  yarnNix = ./yarn.nix;
+  offlineCache = fetchYarnDeps {
+    yarnLock = src + "/yarn.lock";
+    sha256 = "sha256-2HaEVHX/+SO/iUzgzeQlBivdvyoBNWiOWKdl5PyVsNE=";
+  };
 
   # FIXME(@Ma27) on the bump to 1.9.0 I had to patch this file manually:
   # I replaced `midi "https://github.com/paulrosen/MIDI.js.git#abcjs"` with
