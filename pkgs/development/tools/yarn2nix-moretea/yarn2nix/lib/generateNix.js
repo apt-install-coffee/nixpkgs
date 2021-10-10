@@ -87,6 +87,7 @@ function fetchLockedDep(builtinFetchGit) {
       const githubUrl = `https://github.com/${s[3]}/${s[4]}.git`
       const githubRev = s[6]
 
+      const rev = sha1OrRev
       const [_, branch] = nameWithVersion.split('#')
 
       return fetchgit(fileName, githubUrl, rev, branch || 'master', builtinFetchGit)
