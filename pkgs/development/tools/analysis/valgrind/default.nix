@@ -54,7 +54,8 @@ stdenv.mkDerivation rec {
     lib.optional (stdenv.hostPlatform.system == "x86_64-linux" || stdenv.hostPlatform.system == "x86_64-darwin") "--enable-only64bit"
     ++ lib.optional stdenv.hostPlatform.isDarwin "--with-xcodedir=${xnu}/include";
 
-  doCheck = true;
+  # TODO https://patches.linaro.org/patch/103638/
+  doCheck = !stdenv.hostPlatform.isMusl;
 
   postInstall = ''
     for i in $out/libexec/valgrind/*.supp; do
