@@ -80,7 +80,7 @@ stdenv.mkDerivation rec {
     # subset of the platform description.
     "--program-prefix=${targetPrefix}"
 
-    "--enable-targets=all" "--enable-64-bit-bfd"
+    "--enable-64-bit-bfd"
     "--disable-install-libbfd"
     "--disable-shared" "--enable-static"
     "--with-system-zlib"
@@ -92,6 +92,7 @@ stdenv.mkDerivation rec {
     "--with-auto-load-safe-path=${builtins.concatStringsSep ":" safePaths}"
   ] ++ lib.optional (!pythonSupport) "--without-python"
     ++ lib.optional stdenv.hostPlatform.isMusl "--disable-nls"
+    ++ lib.optional (!stdenv.hostPlatform.isMusl) "--enable-targets=all"
     ++ lib.optional enableDebuginfod "--with-debuginfod=yes";
 
   postInstall =
