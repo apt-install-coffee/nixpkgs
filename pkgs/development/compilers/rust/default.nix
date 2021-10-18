@@ -75,8 +75,12 @@
       bootstrapRustPackages = self.buildRustPackages.overrideScope' (_: _:
         lib.optionalAttrs (stdenv.buildPlatform == stdenv.hostPlatform)
           (selectRustPackage buildPackages).packages.prebuilt);
-      bootRustPlatform = makeRustPlatform bootstrapRustPackages;
-    in {
+      boot1RustPlatform = makeRustPlatform bootstrapRustPackages;
+      boot2RustPlatform = rustc: makeRustPlatform {
+        inherit (bootstrapRustPackages) cargo;
+        inherit rustc;
+      };
+    in rec {
       # Packages suitable for build-time, e.g. `build.rs`-type stuff.
       buildRustPackages = (selectRustPackage buildPackages).packages.stable;
       # Analogous to stdenv
@@ -90,7 +94,7 @@
         patches = rustcPatches;
 
         # Use boot package set to break cycle
-        rustPlatform = bootRustPlatform;
+        rustPlatform = boot1RustPlatform;
       } // lib.optionalAttrs (stdenv.cc.isClang && stdenv.hostPlatform == stdenv.buildPlatform) {
         stdenv = llvmBootstrapForDarwin.stdenv;
         pkgsBuildBuild = pkgsBuildBuild // { targetPackages.stdenv = llvmBootstrapForDarwin.stdenv; };
@@ -100,7 +104,7 @@
       rustfmt = self.callPackage ./rustfmt.nix { inherit Security; };
       cargo = self.callPackage ./cargo.nix {
         # Use boot package set to break cycle
-        rustPlatform = bootRustPlatform;
+        rustPlatform = boot2RustPlatform rustc;
         inherit CoreFoundation Security;
       };
       clippy = self.callPackage ./clippy.nix { inherit Security; };

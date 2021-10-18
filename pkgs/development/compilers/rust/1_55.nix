@@ -17,6 +17,7 @@
 , makeRustPlatform
 , llvmPackages_11
 , llvmPackages_12, llvm_12
+, fetchpatch
 } @ args:
 
 import ./default.nix {
@@ -53,7 +54,15 @@ import ./default.nix {
 
   selectRustPackage = pkgs: pkgs.rust_1_55;
 
-  rustcPatches = [
+  rustcPatches = lib.optionals stdenv.targetPlatform.isMusl [
+    (fetchpatch {
+      url = "https://git.alpinelinux.org/aports/plain/community/rust/link-musl-dynamically.patch?id=9289e9034a9c4d8fabf720d870e8e294c17b9d61";
+      sha256 = "sha256-eP51RFVXS56BdXmImUES5RfV8u2j6kIJlCUa2pm1I3g=";
+    })
+    (fetchpatch {
+      url = "https://git.alpinelinux.org/aports/plain/community/rust/musl-fix-linux_musl_base.patch?id=9289e9034a9c4d8fabf720d870e8e294c17b9d61";
+      sha256 = "sha256-jVU9qtrxn/nw2MyydoKmzHBAn2FllnzXdDzoBrC1mxw=";
+    })
   ];
 }
 

@@ -113,6 +113,10 @@ in stdenv.mkDerivation rec {
   postConfigure = ''
     substituteInPlace Makefile \
       --replace 'BOOTSTRAP_ARGS :=' 'BOOTSTRAP_ARGS := --jobs $(NIX_BUILD_CORES)'
+
+    # Allow warnings instead of just aborting the build
+    sed 's/#deny-warnings = .*/deny-warnings = false/' -i config.toml
+    sed 's|deny(warnings,|deny(|' -i src/bootstrap/lib.rs
   '';
 
   # the rust build system complains that nix alters the checksums
