@@ -65,7 +65,8 @@ stdenv.mkDerivation {
   mesonFlags = [ "-Dv4l2=true" "-Dqcam=disabled" ];
 
   # Fixes error on a deprecated declaration
-  NIX_CFLAGS_COMPILE = "-Wno-error=deprecated-declarations";
+  NIX_CFLAGS_COMPILE = [ "-Wno-error=deprecated-declarations" ] ++
+  [ "-Wno-error=format" ];
 
   meta = with lib; {
     description = "An open source camera stack and framework for Linux, Android, and ChromeOS";
