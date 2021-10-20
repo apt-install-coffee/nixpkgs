@@ -4,11 +4,11 @@ with lib;
 
 stdenv.mkDerivation rec {
   pname = "libutempter";
-  version = "1.1.6";
+  version = "1.2.1";
 
   src = fetchurl {
-    url = "http://archive.ubuntu.com/ubuntu/pool/main/libu/libutempter/libutempter_${version}.orig.tar.bz2";
-    sha256 = "15y3xbgznjxnfmix4xg3bwmqdvghdw7slbhazb0ybmyf65gmd65q";
+    url = "ftp://ftp.altlinux.org/pub/people/ldv/utempter/${pname}-${version}.tar.gz";
+    sha256 = "sha256-ln/vNy85HeUBhDrYdXDGz12r2WUfAPF4MJD7wSsqNMs=";
   };
 
   buildInputs = [ glib ];
