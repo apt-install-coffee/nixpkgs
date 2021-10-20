@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, cmake, elfutils, zlib }:
+{ lib, stdenv, fetchgit, cmake, elfutils, zlib, musl-obstack, argp-standalone }:
 
 stdenv.mkDerivation rec {
   pname = "pahole";
@@ -10,8 +10,18 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
+  patches = [
+    # fixes musl build
+    # adapted from void: https://github.com/void-linux/void-packages/blob/master/srcpkgs/pahole/patches/fix_always_inline.patch
+    ./fix_always_inline.patch
+  ];
+
   nativeBuildInputs = [ cmake ];
-  buildInputs = [ elfutils zlib ];
+  buildInputs = [
+    elfutils zlib
+  ] ++ lib.optionals stdenv.targetPlatform.isMusl [
+    musl-obstack argp-standalone
+  ];
 
   # Put libraries in "lib" subdirectory, not top level of $out
   cmakeFlags = [ "-D__LIB=lib" ];
