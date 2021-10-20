@@ -43,12 +43,16 @@ stdenv.mkDerivation rec {
     gtest
   ];
 
-  cmakeFlags = [
-    "-DCMAKE_SKIP_BUILD_RPATH=OFF" # for tests
-    "-D2GEOM_BUILD_SHARED=ON"
+  cmakeFlags = let
+    flag = x: if x then "ON" else "OFF";
+  in [
+    "-D2GEOM_TESTING=${flag doCheck}"
+    "-D2GEOM_BUILD_SHARED=${flag (!stdenv.targetPlatform.isStatic)}"
+  ] ++ lib.optionals doCheck [
+    "-DCMAKE_SKIP_BUILD_RPATH=OFF"
   ];
 
-  doCheck = true;
+  doCheck = !stdenv.targetPlatform.isMusl;
 
   meta = with lib; {
     description = "Easy to use 2D geometry library in C++";
