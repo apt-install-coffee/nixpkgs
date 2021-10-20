@@ -52,7 +52,8 @@ stdenv.mkDerivation {
 
   doCheck = interactive
     && !stdenv.isDarwin
-    && !stdenv.isSunOS; # flaky
+    && !stdenv.isSunOS
+    && !stdenv.targetPlatform.isMusl; # flaky
 
   checkFlagsArray = [
     # Test is known to fail on various locales on texinfo-6.8:
