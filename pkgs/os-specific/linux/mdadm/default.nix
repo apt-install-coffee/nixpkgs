@@ -1,12 +1,12 @@
-{ lib, stdenv, util-linux, coreutils, fetchurl, groff, system-sendmail }:
+{ lib, stdenv, util-linux, coreutils, fetchurl, groff, system-sendmail, udev }:
 
 stdenv.mkDerivation rec {
   pname = "mdadm";
-  version = "4.1";
+  version = "4.2-rc2";
 
   src = fetchurl {
     url = "mirror://kernel/linux/utils/raid/mdadm/mdadm-${version}.tar.xz";
-    sha256 = "0jjgjgqijpdp7ijh8slzzjjw690kydb1jjadf0x5ilq85628hxmb";
+    sha256 = "sha256-NmMkxbTbumAFg6GaBizHfGzaQxkO1brku2X8UYotN34=";
   };
 
   patches = [ ./no-self-references.patch ];
@@ -24,6 +24,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
+  buildInputs = [ udev ];
   nativeBuildInputs = [ groff ];
 
   postPatch = ''
