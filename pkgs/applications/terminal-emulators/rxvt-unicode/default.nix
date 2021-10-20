@@ -53,6 +53,9 @@ stdenv.mkDerivation {
     "--enable-256-color"
     (enableFeature perlSupport "perl")
     (enableFeature unicode3Support "unicode3")
+  ] ++ lib.optionals stdenv.targetPlatform.isMusl [
+    "--disable-wtmp"
+    "--disable-lastlog"
   ];
 
   LDFLAGS = [ "-lfontconfig" "-lXrender" "-lpthread" ];
