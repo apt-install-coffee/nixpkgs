@@ -53,6 +53,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin
     make install
     install -D -m 755 scripts/{pon,poff,plog} $out/bin
+    install -Dm644 include/net/ppp_defs.h $out/include/net/ppp_defs.h
     runHook postInstall
   '';
 
