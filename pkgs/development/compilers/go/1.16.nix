@@ -233,7 +233,7 @@ stdenv.mkDerivation rec {
     (cd src && ./make.bash)
   '';
 
-  doCheck = stdenv.hostPlatform == stdenv.targetPlatform && !stdenv.isDarwin;
+  doCheck = stdenv.hostPlatform == stdenv.targetPlatform && !stdenv.isDarwin && !stdenv.targetPlatform.isMusl;
 
   checkPhase = ''
     runHook preCheck
