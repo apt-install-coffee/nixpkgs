@@ -118,7 +118,7 @@ let
         wrapProgram $out/bin/initdb --prefix PATH ":" ${glibc.bin}/bin
       '';
 
-    doCheck = !stdenv.isDarwin;
+    doCheck = !stdenv.isDarwin && !stdenv.targetPlatform.isMusl;
     # autodetection doesn't seem to able to find this, but it's there.
     checkTarget = "check";
 
