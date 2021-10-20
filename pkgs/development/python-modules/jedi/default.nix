@@ -45,6 +45,8 @@ buildPythonPackage rec {
     "test_init_extension_module"
   ];
 
+  doCheck = !stdenv.targetPlatform.isMusl;
+
   meta = with lib; {
     homepage = "https://github.com/davidhalter/jedi";
     description = "An autocompletion tool for Python that can be used for text editors";
