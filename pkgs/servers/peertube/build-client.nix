@@ -1,12 +1,15 @@
-{ lib, stdenv, yarnModulesConfig, mkYarnModulesFixed, buildGoModule, fetchFromGitHub, server, sources, version, nodejs, esbuild }:
+{ lib, stdenv, yarnModulesConfig, mkYarnModulesFixed, buildGoModule, fetchFromGitHub, server, sources, pin, nodejs, esbuild, fetchYarnDeps }:
 rec {
   modules = mkYarnModulesFixed rec {
-    inherit version;
+    inherit (pin) version;
     pname = "peertube-client-yarn-modules";
     name = "${pname}-${version}";
     packageJSON = "${sources}/client/package.json";
     yarnLock = "${sources}/client/yarn.lock";
-    yarnNix = ./yarn/client.nix;
+    offlineCache = fetchYarnDeps {
+      inherit yarnLock;
+      sha256 = pin.clientYarnHash;
+    };
     pkgConfig = yarnModulesConfig;
   };
   dist = let
@@ -23,7 +26,7 @@ rec {
       vendorSha256 = "sha256-2ABWPqhK2Cf4ipQH7XvRrd+ZscJhYPc3SV2cGT0apdg=";
     };
   in stdenv.mkDerivation {
-    inherit version;
+    inherit (pin) version;
     pname = "peertube-client";
     src = sources;
 

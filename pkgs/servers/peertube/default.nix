@@ -9,13 +9,13 @@ cd pkgs/servers/peertube
 */
 
 let
-  version = "3.4.1";
+  pin = builtins.fromJSON (builtins.readFile ./pin.json);
 
   source = fetchFromGitHub {
     owner = "Chocobozzz";
     repo = "PeerTube";
-    rev = "v${version}";
-    sha256 = "0l1ibqmliy4aq60a16v383v4ijv1c9sf2a35k9q365mkl42jbzx1";
+    rev = "v${pin.version}";
+    sha256 = pin.sourceHash;
   };
 
   yarnModulesConfig = {
@@ -61,22 +61,22 @@ let
   });
 
   server = callPackage ./build-server.nix {
-    inherit version yarnModulesConfig mkYarnModulesFixed;
+    inherit pin yarnModulesConfig mkYarnModulesFixed;
     sources = source;
   };
 
   tools = callPackage ./build-tools.nix {
-    inherit server version yarnModulesConfig mkYarnModulesFixed;
+    inherit server pin yarnModulesConfig mkYarnModulesFixed;
     sources = source;
   };
 
   client = callPackage ./build-client.nix {
-    inherit server version yarnModulesConfig mkYarnModulesFixed;
+    inherit server pin yarnModulesConfig mkYarnModulesFixed;
     sources = source;
   };
 
 in stdenv.mkDerivation rec {
-  inherit version;
+  inherit (pin) version;
   pname = "peertube";
   src = source;
   phases = [ "installPhase" ];

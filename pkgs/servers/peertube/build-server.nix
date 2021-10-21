@@ -1,16 +1,19 @@
-{ stdenv, yarnModulesConfig, mkYarnModulesFixed, sources, version, nodejs }:
+{ stdenv, yarnModulesConfig, mkYarnModulesFixed, sources, pin, nodejs, fetchYarnDeps }:
 rec {
   modules = mkYarnModulesFixed rec {
-    inherit version;
+    inherit (pin) version;
     pname = "peertube-server-yarn-modules";
-    name = "${pname}-${version}";
+    name = "${pname}-${pin.version}";
     packageJSON = "${sources}/package.json";
     yarnLock = "${sources}/yarn.lock";
-    yarnNix = ./yarn/server.nix;
+    offlineCache = fetchYarnDeps {
+      inherit yarnLock;
+      sha256 = pin.serverYarnHash;
+    };
     pkgConfig = yarnModulesConfig;
   };
   dist = stdenv.mkDerivation {
-    inherit version;
+    inherit (pin) version;
     pname = "peertube-server";
     src = sources;
 
