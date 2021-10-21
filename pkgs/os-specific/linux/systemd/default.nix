@@ -139,6 +139,8 @@ stdenv.mkDerivation {
   # patches again via `git -c format.signoff=false format-patch v${version}`.
   # Use `find . -name "*.patch" | sort` to get an up-to-date listing of all patches
   patches = [
+    ./no-shared.diff
+
     ./0001-Start-device-units-for-uninitialised-encrypted-devic.patch
     ./0002-Don-t-try-to-unmount-nix-or-nix-store.patch
     ./0003-Fix-NixOS-containers.patch
@@ -205,7 +207,7 @@ stdenv.mkDerivation {
       --replace \
       "find_program('objcopy'" \
       "find_program('${stdenv.cc.bintools.targetPrefix}objcopy'"
-  '' + (
+  '' /* + (
     let
       # The folllowing patches references to dynamic libraries to ensure that
       # all the features that are implemented via dlopen(3) are available (or
@@ -312,12 +314,16 @@ stdenv.mkDerivation {
       grep -r '"lib[a-zA-Z0-9-]*\.so[\.0-9a-zA-z]*"' src
       exit 1
     fi
-  ''
+  ''*/
   # Finally patch shebangs that might need patching.
   # Should no longer be necessary with v250.
   # https://github.com/systemd/systemd/pull/19638
   + ''
     patchShebangs .
+  ''
+  + lib.optionalString stdenv.targetPlatform.isStatic ''
+    find . -name meson.build -exec sed "s/libshared_static/libshared_small/; s/libsystemd_static/libsystemd_small/; s/shared_library/static_library/" -i {} \;
+    find . -type f -and \( -name "*.c" -or -name "*.h" \) -exec sed "s/\( \|*\)\(mkdir_p\|close_all_fds\|parse_size\|parse_range\|strnappend\)(/\1sd_\2(/g" -i {} \;
   '';
 
   outputs = [ "out" "man" "dev" ];

@@ -1,0 +1,35 @@
+diff --git a/meson.build b/meson.build
+index b5a51b6d0d..89a9aad7c0 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1687,7 +1687,7 @@ libsystemd = shared_library(
+         install_dir : rootlibdir)
+ 
+ install_libsystemd_static = static_library(
+-        'systemd',
++        'systemd-static',
+         libsystemd_sources,
+         basic_sources,
+         basic_gcrypt_sources,
+@@ -1725,7 +1725,7 @@ libudev = shared_library(
+         install_dir : rootlibdir)
+ 
+ install_libudev_static = static_library(
+-        'udev',
++        'udev-static',
+         basic_sources,
+         fundamental_sources,
+         shared_sources,
+diff --git a/src/shared/meson.build b/src/shared/meson.build
+index 7eb7050062..77aac4090b 100644
+--- a/src/shared/meson.build
++++ b/src/shared/meson.build
+@@ -437,7 +437,7 @@ libshared_deps = [threads,
+ libshared_sym_path = '@0@/libshared.sym'.format(meson.current_source_dir())
+ 
+ libshared_static = static_library(
+-        libshared_name,
++        libshared_name + '_static',
+         shared_sources,
+         include_directories : includes,
+         dependencies : libshared_deps,
