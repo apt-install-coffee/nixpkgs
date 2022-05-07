@@ -16650,6 +16650,8 @@ with pkgs;
     autoreconfHook = buildPackages.autoreconfHook269;
   };
 
+  libomemo-c = callPackage ../development/libraries/libomemo-c { };
+
   libopcodes = callPackage ../development/libraries/libopcodes {
     autoreconfHook = buildPackages.autoreconfHook269;
   };

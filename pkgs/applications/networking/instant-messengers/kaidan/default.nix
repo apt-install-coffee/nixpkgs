@@ -12,6 +12,7 @@
 , knotifications
 , zxing-cpp
 , qxmpp
+, qca-qt5
 , sonnet
 , gst_all_1
 }:
@@ -22,10 +23,10 @@ mkDerivation rec {
 
   src = fetchFromGitLab {
     domain = "invent.kde.org";
-    owner = "network";
+    owner = "melvo";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "070njci5zyzahmz3nqyp660chxnqx1mxp31w17syfllvrw403qmg";
+    rev = "e02fef687be5d7e3fe33f70cbb42a48a4618ff6a";
+    sha256 = "sha256-QYnJZVUbpAgvfE4i3Q0IVE3HSD1tf2ZAAwN2mylNP00=";
   };
 
   nativeBuildInputs = [ cmake extra-cmake-modules pkg-config ];
@@ -39,6 +40,7 @@ mkDerivation rec {
     knotifications
     zxing-cpp
     qxmpp
+    qca-qt5
     sonnet
     gstreamer
     gst-plugins-bad
