@@ -86,6 +86,11 @@ stdenv.mkDerivation rec {
     })
     ./remove-tools-1.11.patch
     ./go_no_vendor_checks-1.16.patch
+
+    # change the default buildmode to produce Position-Independent Executables
+    # While this is a hardening feature on glibc, it is _needed_ on non-glibc
+    # linux systems, since it otherwise produces segfaulting binaries
+    ./buildmode-pie.patch
   ];
 
   GOOS = stdenv.targetPlatform.parsed.kernel.name;

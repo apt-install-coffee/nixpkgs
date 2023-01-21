@@ -1,0 +1,14 @@
+diff --git a/src/cmd/go/internal/work/init.go b/src/cmd/go/internal/work/init.go
+index 255ff3a..21e5ba4 100644
+--- a/src/cmd/go/internal/work/init.go
++++ b/src/cmd/go/internal/work/init.go
+@@ -226,7 +226,7 @@ func buildModeInit() {
+ 			}
+ 			fallthrough
+ 		default:
+-			ldBuildmode = "exe"
++			ldBuildmode = "pie"
+ 		}
+ 		if gccgo {
+ 			codegenArg = ""
+
