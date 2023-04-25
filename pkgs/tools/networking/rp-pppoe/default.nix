@@ -3,11 +3,11 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "rp-pppoe";
-  version = "3.12";
+  version = "4.0-beta1";
 
   src = fetchurl {
-    url = "https://www.roaringpenguin.com/files/download/rp-pppoe-${version}.tar.gz";
-    sha256 = "1hl6rjvplapgsyrap8xj46kc9kqwdlm6ya6gp3lv0ihm0c24wy80";
+    url = "https://dianne.skoll.ca/projects/rp-pppoe/download/rp-pppoe-${version}.tar.gz";
+    hash = "sha256-UEzn+LmQPCs61y2EYMBhU4A7Z5h51ttGsG4tjxGxThw=";
   };
 
   buildInputs = [ ppp ];
@@ -17,19 +17,24 @@ stdenv.mkDerivation rec {
     export PPPD=${ppp}/sbin/pppd
   '';
 
-  configureFlags = lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [ "rpppoe_cv_pack_bitfields=rev" ];
+  configureFlags = [
+    "--enable-plugin=${ppp}"
+  ];
 
   postConfigure = ''
     sed -i Makefile -e 's@DESTDIR)/etc/ppp@out)/etc/ppp@'
     sed -i Makefile -e 's@PPPOESERVER_PPPD_OPTIONS=@&$(out)@'
   '';
 
-  makeFlags = [ "AR:=$(AR)" ];
+  makeFlags = [
+    "AR:=$(AR)"
+    "PLUGIN_DIR=$(out)/lib/pppd"
+  ];
 
   meta = with lib; {
     description = "Roaring Penguin Point-to-Point over Ethernet tool";
     platforms = platforms.linux;
-    homepage = "https://www.roaringpenguin.com/products/pppoe";
+    homepage = "https://dianne.skoll.ca/projects/rp-pppoe/";
     license = licenses.gpl2Plus;
   };
 }
