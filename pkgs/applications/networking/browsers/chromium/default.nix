@@ -1,5 +1,7 @@
 { newScope, config, stdenv, fetchurl, makeWrapper
 , buildPackages
+, llvmPackages_14
+, llvmPackages_15
 , llvmPackages_16
 , ed, gnugrep, coreutils, xdg-utils
 , glib, gtk3, gtk4, gnome, gsettings-desktop-schemas, gn, fetchgit
@@ -20,12 +22,12 @@
 }:
 
 let
-  llvmPackages = llvmPackages_16;
+  llvmPackages = llvmPackages_14;
   stdenv = llvmPackages.stdenv;
 
   # Helper functions for changes that depend on specific versions:
   warnObsoleteVersionConditional = min-version: result:
-    let min-supported-version = "114";
+    let min-supported-version = "108";
     in lib.warnIf
          (lib.versionAtLeast min-supported-version min-version)
          "chromium: min-supported-version is newer than a conditional bounded at ${min-version}"
@@ -53,6 +55,12 @@ let
           inherit (upstream-info.deps.gn) url rev sha256;
         };
       });
+    } // lib.optionalAttrs (chromiumVersionAtLeast "111") rec {
+      llvmPackages = llvmPackages_15;
+      stdenv = llvmPackages_15.stdenv;
+    } // lib.optionalAttrs (chromiumVersionAtLeast "113") rec {
+      llvmPackages = llvmPackages_16;
+      stdenv = llvmPackages_16.stdenv;
     });
 
     browser = callPackage ./browser.nix {
