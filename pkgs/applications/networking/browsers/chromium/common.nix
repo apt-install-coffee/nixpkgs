@@ -199,8 +199,10 @@ let
         fi
       done
 
-      # Required for patchShebangs (unsupported interpreter directive, basename: invalid option -- '*', etc.):
-      substituteInPlace native_client/SConstruct --replace "#! -*- python -*-" ""
+      if [[ -d native_client ]]; then
+        # Required for patchShebangs (unsupported interpreter directive, basename: invalid option -- '*', etc.):
+        substituteInPlace native_client/SConstruct --replace "#! -*- python -*-" ""
+      fi
       if [ -e third_party/harfbuzz-ng/src/src/update-unicode-tables.make ]; then
         substituteInPlace third_party/harfbuzz-ng/src/src/update-unicode-tables.make \
           --replace "/usr/bin/env -S make -f" "/usr/bin/make -f"

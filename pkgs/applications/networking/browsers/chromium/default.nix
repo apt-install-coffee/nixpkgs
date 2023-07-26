@@ -10,6 +10,7 @@
 # package customization
 # Note: enable* flags should not require full rebuilds (i.e. only affect the wrapper)
 , channel ? "stable"
+, upstream-info ? (lib.importJSON ./upstream-info.json).${channel}
 , proprietaryCodecs ? true
 , enableWideVine ? false
 , ungoogled ? false # Whether to build chromium or ungoogled-chromium
@@ -22,14 +23,12 @@ let
   llvmPackages = llvmPackages_16;
   stdenv = llvmPackages.stdenv;
 
-  upstream-info = (lib.importJSON ./upstream-info.json).${channel};
-
   # Helper functions for changes that depend on specific versions:
   warnObsoleteVersionConditional = min-version: result:
-    let ungoogled-version = (lib.importJSON ./upstream-info.json).ungoogled-chromium.version;
+    let min-supported-version = "114";
     in lib.warnIf
-         (lib.versionAtLeast ungoogled-version min-version)
-         "chromium: ungoogled version ${ungoogled-version} is newer than a conditional bounded at ${min-version}. You can safely delete it."
+         (lib.versionAtLeast min-supported-version min-version)
+         "chromium: min-supported-version is newer than a conditional bounded at ${min-version}"
          result;
   chromiumVersionAtLeast = min-version:
     let result = lib.versionAtLeast upstream-info.version min-version;
