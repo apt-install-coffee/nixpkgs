@@ -17,10 +17,8 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  postPatch = if (stdenv.cc.isClang || stdenv.hostPlatform.isStatic) then ''
+  postPatch = lib.optionalString (stdenv.cc.isClang || stdenv.hostPlatform.isStatic) ''
     substituteInPlace configure.ac --replace "-lgcc_s" ""
-  '' else lib.optionalString stdenv.hostPlatform.isMusl ''
-    substituteInPlace configure.ac --replace "-lgcc_s" "-lgcc_eh"
   '';
 
   nativeBuildInputs = [ autoreconfHook ];
