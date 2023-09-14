@@ -1,7 +1,5 @@
 { lib
 , chromium
-, jq
-, git
 , nodejs
 , fetchYarnDeps
 , fetchNpmDeps
@@ -10,9 +8,9 @@
 , yarn
 , substituteAll
 , libnotify
-, libgnome-keyring3
 , unzip
 , pkgs
+, pkgsBuildHost
 
 , info
 }:
@@ -28,7 +26,7 @@ in (chromium.override { upstream-info = info.chromium; }).mkDerivation (base: {
   buildTargets = [ "electron:electron_dist_zip" ];
 
   nativeBuildInputs = base.nativeBuildInputs ++ [ nodejs yarn fixup_yarn_lock unzip npmHooks.npmConfigHook ];
-  buildInputs = base.buildInputs ++ [ libnotify libgnome-keyring3 ];
+  buildInputs = base.buildInputs ++ [ libnotify ];
 
   electronOfflineCache = fetchYarnDeps {
     yarnLock = (fetchdep info.deps."src/electron") + "/yarn.lock";
@@ -113,7 +111,7 @@ in (chromium.override { upstream-info = info.chromium; }).mkDerivation (base: {
 
     (
       cd ..
-      PATH=$PATH:${lib.makeBinPath [ jq git ]}
+      PATH=$PATH:${lib.makeBinPath (with pkgsBuildHost; [ jq git ])}
       config=src/electron/patches/config.json
       for key in $(jq -r "keys[]" $config)
       do
@@ -165,6 +163,8 @@ in (chromium.override { upstream-info = info.chromium; }).mkDerivation (base: {
     enable_widevine = false;
     use_perfetto_client_library = false;
     enable_check_raw_ptr_fields = false;
+  } // lib.optionalAttrs (lib.versionOlder info.version "26")  {
+    use_gnome_keyring = false;
   };
 
   installPhase = ''
