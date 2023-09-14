@@ -6,6 +6,7 @@
 , libva, pipewire, wayland
 , gcc, nspr, nss, runCommand
 , lib, libkrb5
+, electron-source # for warnObsoleteVersionConditional
 
 # package customization
 # Note: enable* flags should not require full rebuilds (i.e. only affect the wrapper)
@@ -31,10 +32,10 @@ let
 
   # Helper functions for changes that depend on specific versions:
   warnObsoleteVersionConditional = min-version: result:
-    let min-supported-version = "114";
+    let min-supported-version = (lib.head (lib.attrValues electron-source)).unwrapped.info.chromium.version;
     in lib.warnIf
          (lib.versionAtLeast min-supported-version min-version)
-         "chromium: min-supported-version is newer than a conditional bounded at ${min-version}"
+         "chromium: min-supported-version ${min-supported-version} is newer than a conditional bounded at ${min-version}. You can safely delete it."
          result;
   chromiumVersionAtLeast = min-version:
     let result = lib.versionAtLeast upstream-info.version min-version;

@@ -167,6 +167,8 @@ in (chromium.override { upstream-info = info.chromium; }).mkDerivation (base: {
 
   requiredSystemFeatures = [ "big-parallel" ];
 
+  passthru = { inherit info; };
+
   meta = with lib; {
     description = "Cross platform desktop application shell";
     homepage = "https://github.com/electron/electron";
