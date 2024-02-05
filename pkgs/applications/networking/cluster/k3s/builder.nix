@@ -192,6 +192,11 @@ let
 
     tags = [ "ctrd" "libsqlite3" "linux" ];
 
+    postConfigure = ''
+      chmod u+w -R vendor
+      patch --verbose -p1 -d vendor/k8s.io/kubernetes < ${./0001-kubelet-new-cgroup-driver-none.patch}
+    '';
+
     # create the multicall symlinks for k3s
     postInstall = ''
       mv $out/bin/server $out/bin/k3s
