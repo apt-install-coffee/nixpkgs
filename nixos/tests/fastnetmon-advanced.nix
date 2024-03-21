@@ -26,6 +26,7 @@
     };
     fnm = { ... }: {
       networking.firewall.allowedTCPPorts = [ 179 ];
+      services.dbus.implementation = "broker"; # workaround for https://github.com/NixOS/nixpkgs/issues/297756
       services.fastnetmon-advanced = {
         enable = true;
         settings = {
