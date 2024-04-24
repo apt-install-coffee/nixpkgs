@@ -71,7 +71,7 @@
             [target."${stdenv.hostPlatform.rust.rustcTarget}"]
             "linker" = "${rust.envVars.linkerForHost}"
           ''}
-          "rustflags" = [ "-C", "target-feature=${if stdenv.hostPlatform.isStatic then "+" else "-"}crt-static" ]
+          "rustflags" = [ "-C", "target-feature=-crt-static" ]
         '';
       };
     } ./cargo-setup-hook.sh) {};

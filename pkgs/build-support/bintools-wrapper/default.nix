@@ -224,7 +224,7 @@ stdenvNoCC.mkDerivation {
 
     '' + (if !useMacosReexportHack then ''
       if [ -e ''${ld:-$ldPath/${targetPrefix}ld} ]; then
-        wrap ${targetPrefix}ld ${./ld-wrapper.sh} ''${ld:-$ldPath/${targetPrefix}ld}
+        wrap ${targetPrefix}ld ${if targetPlatform.isMusl then ./ld-musl-wrapper.sh else ./ld-wrapper.sh} ''${ld:-$ldPath/${targetPrefix}ld}
       fi
     '' else ''
       ldInner="${targetPrefix}ld-reexport-delegate"

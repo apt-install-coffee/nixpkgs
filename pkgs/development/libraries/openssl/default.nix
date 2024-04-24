@@ -70,7 +70,7 @@ let
       stdenv.cc.isGNU;
 
     nativeBuildInputs =
-         lib.optional (!stdenv.hostPlatform.isWindows) makeWrapper
+         lib.optional (!stdenv.hostPlatform.isWindows && !stdenv.hostPlatform.isStatic) makeWrapper
       ++ [ perl ]
       ++ lib.optionals static [ removeReferencesTo ];
     buildInputs = lib.optional withCryptodev cryptodev
@@ -185,7 +185,7 @@ let
       mkdir -p $bin
       mv $out/bin $bin/bin
 
-    '' + lib.optionalString (!stdenv.hostPlatform.isWindows)
+    '' + lib.optionalString (!stdenv.hostPlatform.isWindows && !stdenv.hostPlatform.isStatic)
       # makeWrapper is broken for windows cross (https://github.com/NixOS/nixpkgs/issues/120726)
     ''
       # c_rehash is a legacy perl script with the same functionality

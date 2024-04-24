@@ -54,6 +54,13 @@
 , gccForLibs ? if useCcForLibs then cc else null
 , fortify-headers ? null
 , includeFortifyHeaders ? null
+
+  # Prefix for binaries. Customarily ends with a dash separator.
+  #
+  # TODO(@Ericson2314) Make unconditional, or optional but always true by
+  # default.
+, targetPrefix ? with stdenvNoCC;
+    lib.optionalString (targetPlatform != hostPlatform) (targetPlatform.config + "-")
 }:
 
 assert nativeTools -> !propagateDoc && nativePrefix != "";
@@ -88,11 +95,6 @@ let
   includeFortifyHeaders' = if includeFortifyHeaders != null
     then includeFortifyHeaders
     else (targetPlatform.libc == "musl" && isGNU);
-
-  # Prefix for binaries. Customarily ends with a dash separator.
-  #
-  # TODO(@Ericson2314) Make unconditional, or optional but always true by default.
-  targetPrefix = optionalString (targetPlatform != hostPlatform) (targetPlatform.config + "-");
 
   ccVersion = getVersion cc;
   ccName = removePrefix targetPrefix (getName cc);

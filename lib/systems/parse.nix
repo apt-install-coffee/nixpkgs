@@ -266,6 +266,7 @@ rec {
     # Actually matters, unlocking some MinGW-w64-specific options in GCC. See
     # bottom of https://sourceforge.net/p/mingw-w64/wiki2/Unicode%20apps/
     w64 = {};
+    solo5 = {};
 
     none = {};
     unknown = {};
@@ -470,6 +471,7 @@ rec {
       }
       # cpu-vendor-os
       else if elemAt l 1 == "apple" ||
+              elemAt l 1 == "solo5" ||
               elem (elemAt l 2) [ "wasi" "redox" "mmixware" "ghcjs" "mingw32" ] ||
               hasPrefix "freebsd" (elemAt l 2) ||
               hasPrefix "netbsd" (elemAt l 2) ||

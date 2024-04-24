@@ -279,6 +279,7 @@ let
       })] ++ overlays;
       crossSystem = {
         isStatic = true;
+        useLLVM = true;
         parsed =
           if stdenv.isLinux
           then makeMuslParsedPlatform stdenv.hostPlatform.parsed

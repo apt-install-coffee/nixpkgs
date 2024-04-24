@@ -245,6 +245,22 @@ rec {
   };
 
   #
+  # Solo5
+  #
+
+  aarch64-solo5 = {
+    config = "aarch64-solo5-none";
+    linker = "lld";
+    useLLVM = true;
+  };
+
+  x86_64-solo5 = {
+    config = "x86_64-solo5-none";
+    linker = "lld";
+    useLLVM = true;
+  };
+
+  #
   # Darwin
   #
 
@@ -353,4 +369,5 @@ rec {
     # https://github.com/ghcjs/ghcjs/issues/53
     config = "javascript-unknown-ghcjs";
   };
+
 }

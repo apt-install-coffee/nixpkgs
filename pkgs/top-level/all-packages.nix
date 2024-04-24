@@ -18317,6 +18317,7 @@ with pkgs;
     else if linker == "cctools" then darwin.binutils-unwrapped
     else if linker == "bfd"     then binutils-unwrapped
     else if linker == "gold"    then binutils-unwrapped.override { enableGoldDefault = true; }
+    else if linker == "solo5"   then solo5-toolchain-unwrapped
     else null;
   bintoolsNoLibc = wrapBintoolsWith {
     bintools = bintools-unwrapped;
@@ -21190,6 +21191,7 @@ with pkgs;
     else if name == "nblibc" then targetPackages.netbsdCross.libc or netbsdCross.libc
     else if name == "wasilibc" then targetPackages.wasilibc or wasilibc
     else if name == "relibc" then targetPackages.relibc or relibc
+    else if name == "miragenolibc" then targetPackages.mirage-nolibc or mirage-nolibc
     else throw "Unknown libc ${name}";
 
   libcCross = assert stdenv.targetPlatform != stdenv.buildPlatform; libcCrossChooser stdenv.targetPlatform.libc;
@@ -28080,6 +28082,27 @@ with pkgs;
   smem = callPackage ../os-specific/linux/smem { };
 
   smimesign = callPackage ../os-specific/darwin/smimesign { };
+
+  solo5 = callPackage ../os-specific/solo5 { };
+  solo5-tools = callPackage ../os-specific/solo5 {
+    enableToolchain = false;
+  };
+
+  solo5-toolchain-unwrapped = callPackage ../os-specific/solo5 {
+    enableToolchain = true;
+  };
+
+  solo5-toolchain = wrapCCWith rec {
+    cc = solo5-toolchain-unwrapped;
+    inherit (solo5-toolchain-unwrapped) targetPrefix;
+    bintools = wrapBintoolsWith {
+      bintools = solo5-toolchain-unwrapped;
+    };
+    # XXX lol
+    extraBuildCommands = ''
+      echo "-target aarch64-unknown-linux" >> "$out/nix-support/cc-cflags"
+    '';
+  };
 
   statik = callPackage ../development/tools/statik { };
 

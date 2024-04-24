@@ -94,6 +94,7 @@ let
         else if final.isNetBSD              then "nblibc"
         else if final.isAvr                 then "avrlibc"
         else if final.isGhcjs               then null
+        else if final.isSolo5               then "miragenolibc"
         else if final.isNone                then "newlib"
         # TODO(@Ericson2314) think more about other operating systems
         else                                     "native/impure";
@@ -184,7 +185,7 @@ let
       # don't support dynamic linking, but don't get the `staticMarker`.
       # `pkgsStatic` sets `isStatic=true`, so `pkgsStatic.hostPlatform` always
       # has the `staticMarker`.
-      isStatic = final.isWasm || final.isRedox;
+      isStatic = final.isWasm || final.isRedox || final.isSolo5;
 
       # Just a guess, based on `system`
       inherit

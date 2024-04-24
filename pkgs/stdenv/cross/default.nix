@@ -71,6 +71,8 @@ in lib.init bootStages ++ [
              then throw "no C compiler provided for this platform"
            else if crossSystem.isDarwin
              then buildPackages.llvmPackages.libcxxClang
+           else if crossSystem.isSolo5
+             then buildPackages.solo5-toolchain
            else if crossSystem.useLLVM or false
              then buildPackages.llvmPackages.clang
            else buildPackages.gcc;
@@ -80,7 +82,7 @@ in lib.init bootStages ++ [
              (hostPlatform.isLinux && !buildPlatform.isLinux)
              [ buildPackages.patchelf ]
         ++ lib.optional
-             (let f = p: !p.isx86 || builtins.elem p.libc [ "musl" "wasilibc" "relibc" ] || p.isiOS || p.isGenode;
+             (let f = p: !p.isx86 || builtins.elem p.libc [ "musl" "wasilibc" "relibc" "miragenolibc" ] || p.isiOS || p.isGenode;
                in f hostPlatform && !(f buildPlatform) )
              buildPackages.updateAutotoolsGnuConfigScriptsHook
         ;

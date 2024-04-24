@@ -126,6 +126,7 @@ stdenv.mkDerivation rec {
     substituteInPlace $dev/bin/musl-gcc \
       --replace $out/lib/musl-gcc.specs $dev/lib/musl-gcc.specs
 
+  '' + lib.optionalString (stdenv.buildPlatform == stdenv.hostPlatform) ''
     # provide 'iconv' utility, using just-built headers, libc/ldso
     $CC ${iconv_c} -o $bin/bin/iconv \
       -I$dev/include \
