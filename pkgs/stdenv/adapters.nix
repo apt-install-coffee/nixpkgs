@@ -266,7 +266,7 @@ rec {
   useMoldLinker = stdenv:
     stdenv.override (old: {
       mkDerivationFromStdenv = extendMkDerivationArgs old (args: {
-        env = (args.env or { }) // { NIX_CFLAGS_LINK = toString (args.env.NIX_CFLAGS_LINK or "") + " -fuse-ld=mold"; };
+        NIX_CFLAGS_LINK = toString (args.env.NIX_CFLAGS_LINK or "") + " -fuse-ld=mold";
       });
     });
 
@@ -305,7 +305,7 @@ rec {
   withCFlags = compilerFlags: stdenv:
     stdenv.override (old: {
       mkDerivationFromStdenv = extendMkDerivationArgs old (args: {
-        env = (args.env or { }) // { NIX_CFLAGS_COMPILE = toString (args.env.NIX_CFLAGS_COMPILE or "") + " ${toString compilerFlags}"; };
+        NIX_CFLAGS_COMPILE = toString (args.env.NIX_CFLAGS_COMPILE or "") + " ${toString compilerFlags}";
       });
     });
 
