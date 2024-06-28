@@ -266,9 +266,9 @@ rec {
     # gcc >12.1.0 supports '-fuse-ld=mold'
     # the wrap ld above in bintools supports gcc <12.1.0 and shouldn't harm >12.1.0
     # https://github.com/rui314/mold#how-to-use
-    mkDerivationFromStdenv = extendMkDerivationArgs old (args: {
-      NIX_CFLAGS_LINK = toString (args.NIX_CFLAGS_LINK or "") + " -fuse-ld=mold";
-    });
+    mkDerivationFromStdenv = addAttrsToDerivation {
+      env.NIX_CFLAGS_LINK = " -fuse-ld=mold";
+    };
   });
 
 
@@ -304,9 +304,9 @@ rec {
   */
   withCFlags = compilerFlags: stdenv:
     stdenv.override (old: {
-      mkDerivationFromStdenv = extendMkDerivationArgs old (args: {
-        env = (args.env or {}) // { NIX_CFLAGS_COMPILE = toString (args.env.NIX_CFLAGS_COMPILE or "") + " ${toString compilerFlags}"; };
-      });
+      mkDerivationFromStdenv = addAttrsToDerivation {
+        env.NIX_CFLAGS_COMPILE = " ${toString compilerFlags}";
+      };
     });
 
   # Overriding the SDK changes the Darwin SDK used to build the package, which:
