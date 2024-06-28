@@ -253,14 +253,20 @@ rec {
     in
     overrideCC targetStdenv cc;
 
-  useMoldLinker = stdenv:
-    stdenv.override (old: {
-      allowedRequisites = null;
-      cc = stdenv.cc;
-      mkDerivationFromStdenv = extendMkDerivationArgs old (args: {
-        env.NIX_CFLAGS_LINK = toString (args.env.NIX_CFLAGS_LINK or "") + " -fuse-ld=mold";
+  useMoldLinker = stdenv: let
+    bintools = stdenv.cc.bintools.override {
+      extraBuildCommands = ''
+        wrap ${stdenv.cc.bintools.targetPrefix}ld.mold ${../build-support/bintools-wrapper/ld-wrapper.sh} ${pkgs.mold}/bin/ld.mold
+        wrap ${stdenv.cc.bintools.targetPrefix}ld ${../build-support/bintools-wrapper/ld-wrapper.sh} ${pkgs.mold}/bin/ld.mold
+      '';
+    };
+    in stdenv.override (old: {
+        allowedRequisites = null;
+        cc = stdenv.cc.override { inherit bintools; };
+        mkDerivationFromStdenv = extendMkDerivationArgs old (args: {
+          env.NIX_CFLAGS_LINK = toString (args.env.NIX_CFLAGS_LINK or "") + " -fuse-ld=mold";
+        });
       });
-    });
 
 
   /* Modify a stdenv so that it builds binaries optimized specifically
