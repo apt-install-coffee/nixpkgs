@@ -268,7 +268,7 @@ rec {
     # https://github.com/rui314/mold#how-to-use
     mkDerivationFromStdenv = addAttrsToDerivation {
       env.NIX_CFLAGS_LINK = " -fuse-ld=mold";
-    };
+    } stdenv;
   });
 
 
@@ -306,7 +306,7 @@ rec {
     stdenv.override (old: {
       mkDerivationFromStdenv = addAttrsToDerivation {
         env.NIX_CFLAGS_COMPILE = " ${toString compilerFlags}";
-      };
+      } stdenv;
     });
 
   # Overriding the SDK changes the Darwin SDK used to build the package, which:
