@@ -266,7 +266,6 @@ rec {
     # gcc >12.1.0 supports '-fuse-ld=mold'
     # the wrap ld above in bintools supports gcc <12.1.0 and shouldn't harm >12.1.0
     # https://github.com/rui314/mold#how-to-use
-    } // lib.optionalAttrs (stdenv.cc.isClang || (stdenv.cc.isGNU && lib.versionAtLeast stdenv.cc.version "12")) {
     mkDerivationFromStdenv = extendMkDerivationArgs old (args: {
       NIX_CFLAGS_LINK = toString (args.NIX_CFLAGS_LINK or "") + " -fuse-ld=mold";
     });
