@@ -31,13 +31,16 @@ stdenv.mkDerivation rec {
 
   buildInputs = lib.optionals stdenv.hostPlatform.isDarwin [ Security libiconv ];
 
-  makeFlags = [
-    "CARGO=${cargo}/bin/cargo"
-    "PREFIX=${placeholder "out"}"
-    "PROFILE=release"
-    "INSTALLDIR_MAN=${placeholder "out"}/share/man/man1"
-  ] ++ lib.optionals (prefix != null) [ "PROG_PREFIX=${prefix}" ]
-  ++ lib.optionals buildMulticallBinary [ "MULTICALL=y" ];
+  makeFlags =
+    [
+      "CARGO=${cargo}/bin/cargo"
+      "PREFIX=${placeholder "out"}"
+      "PROFILE=release"
+      "INSTALLDIR_MAN=${placeholder "out"}/share/man/man1"
+    ]
+    ++ lib.optionals (prefix != null) [ "PROG_PREFIX=${prefix}" ]
+    ++ lib.optionals buildMulticallBinary [ "MULTICALL=y" ]
+    ++ lib.optionals stdenv.hostPlatform.isMusl [ "EXES=feat_os_unix_musl" ];
 
   # too many impure/platform-dependent tests
   doCheck = false;
