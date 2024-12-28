@@ -776,6 +776,7 @@ let
     RmecabKo = [ pkgs.mecab ];
     markets = [ pkgs.gsl ];
     rlas = [ pkgs.boost ];
+    bgx = [ pkgs.boost ];
     PoissonBinomial = [ pkgs.fftw.dev ];
     poisbinom = [ pkgs.fftw.dev ];
     PoissonMultinomial = [ pkgs.fftw.dev ];
@@ -1286,6 +1287,10 @@ let
       preConfigure = ''
         export JAVA_CPPFLAGS=-I${pkgs.jdk}/include/
         export JAVA_HOME=${pkgs.jdk}
+        substituteInPlace R/zzz.R.in \
+          --replace-fail ".onLoad <- function(libname, pkgname) {" \
+            ".onLoad <- function(libname, pkgname) {
+             Sys.setenv(\"JAVA_HOME\" = Sys.getenv(\"JAVA_HOME\", unset = \"${pkgs.jdk}\"))"
       '';
     });
 
@@ -1804,7 +1809,7 @@ let
     });
 
     Rhdf5lib = let
-      hdf5 = pkgs.hdf5_1_10.overrideAttrs (attrs: {configureFlags = attrs.configureFlags ++ [ "--enable-cxx" ];});
+      hdf5 = pkgs.hdf5_1_10;
     in old.Rhdf5lib.overrideAttrs (attrs: {
       propagatedBuildInputs = attrs.propagatedBuildInputs ++ [ hdf5.dev pkgs.libaec ];
       patches = [ ./patches/Rhdf5lib.patch ];

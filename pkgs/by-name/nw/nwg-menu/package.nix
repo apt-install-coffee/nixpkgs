@@ -1,25 +1,44 @@
-{ lib, fetchFromGitHub
-, buildGoModule, pkg-config, wrapGAppsHook3, gobject-introspection
-, gtk-layer-shell, gtk3, pango, gdk-pixbuf, atk
+{
+  lib,
+  fetchFromGitHub,
+  buildGoModule,
+  pkg-config,
+  wrapGAppsHook3,
+  gobject-introspection,
+  gtk-layer-shell,
+  gtk3,
+  pango,
+  gdk-pixbuf,
+  atk,
 }:
 
 buildGoModule rec {
   pname = "nwg-menu";
-  version = "0.1.3";
+  version = "0.1.6";
 
   src = fetchFromGitHub {
     owner = "nwg-piotr";
     repo = "nwg-menu";
     rev = "v${version}";
-    sha256 = "sha256-PMW5QUUZcdWNOMexJVy0hYXx+y2AopT3WL29iWb9MbM=";
+    sha256 = "sha256-njh2GGYg3YbBXh3h6zrTJc9E0ehAbmaVQN/2DdsBjQU=";
   };
 
-  vendorHash = "sha256-PJvHDmyqE+eIELGRD8QHsZgZ7L0DKc2FYOvfvurzlhs=";
+  vendorHash = "sha256-l6Xfna4btWhUGqqmIx6+s+cR9YZ33KQyEviySd2Eopw=";
 
   doCheck = false;
 
-  buildInputs = [ atk gtk3 gdk-pixbuf gtk-layer-shell pango ];
-  nativeBuildInputs = [ pkg-config wrapGAppsHook3 gobject-introspection ];
+  buildInputs = [
+    atk
+    gtk3
+    gdk-pixbuf
+    gtk-layer-shell
+    pango
+  ];
+  nativeBuildInputs = [
+    pkg-config
+    wrapGAppsHook3
+    gobject-introspection
+  ];
 
   prePatch = ''
     for file in main.go tools.go; do

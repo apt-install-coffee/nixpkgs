@@ -1,14 +1,14 @@
 {
   buildDotnetModule,
   cargo-about,
-  cargo-tauri,
+  cargo-tauri_1,
   dotnetCorePackages,
   fetchFromGitHub,
   fetchNpmDeps,
   glib-networking,
   google-fonts,
   lib,
-  libsoup,
+  libsoup_2_4,
   nodejs,
   npmHooks,
   openssl,
@@ -51,7 +51,7 @@ let
       "vrc-get-litedb/dotnet/vrc-get-litedb.csproj"
       "vrc-get-litedb/dotnet/LiteDB/LiteDB/LiteDB.csproj"
     ];
-    nugetDeps = ./deps.nix;
+    nugetDeps = ./deps.json;
   };
 in
 rustPlatform.buildRustPackage {
@@ -59,7 +59,7 @@ rustPlatform.buildRustPackage {
 
   nativeBuildInputs = [
     cargo-about
-    cargo-tauri.hook
+    cargo-tauri_1.hook
     dotnetSdk
     nodejs
     npmHooks.npmConfigHook
@@ -70,7 +70,7 @@ rustPlatform.buildRustPackage {
     [ openssl ]
     ++ lib.optionals stdenv.hostPlatform.isLinux [
       glib-networking
-      libsoup
+      libsoup_2_4
       webkitgtk_4_0
     ]
     ++ dotnetSdk.packages

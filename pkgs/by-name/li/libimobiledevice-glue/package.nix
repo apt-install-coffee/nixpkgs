@@ -1,21 +1,22 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, autoreconfHook
-, pkg-config
-, libplist
-, nix-update-script
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  autoreconfHook,
+  pkg-config,
+  libplist,
+  nix-update-script,
 }:
 
 stdenv.mkDerivation rec {
   pname = "libimobiledevice-glue";
-  version = "1.3.0";
+  version = "1.3.1";
 
   src = fetchFromGitHub {
     owner = "libimobiledevice";
     repo = pname;
     rev = version;
-    hash = "sha256-+poCrn2YHeH8RQCfWDdnlmJB4Nf+unWUVwn7YwILHIs=";
+    hash = "sha256-Fu0zQIryESRaTGzDlAaewX9Yo2nPEeUxmcb3yPJLuSI=";
   };
 
   preAutoreconf = ''
@@ -31,7 +32,10 @@ stdenv.mkDerivation rec {
     libplist
   ];
 
-  outputs = [ "out" "dev" ];
+  outputs = [
+    "out"
+    "dev"
+  ];
 
   passthru.updateScript = nix-update-script { };
 

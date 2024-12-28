@@ -10,21 +10,26 @@
   fluidsynth,
   libpulseaudio,
   lilv,
+  which,
+  wrapGAppsHook3,
   nixosTests,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
-  version = "1.6.4";
+  version = "1.6.5";
   pname = "tuxguitar";
 
   src = fetchurl {
     url = "https://github.com/helge17/tuxguitar/releases/download/${finalAttrs.version}/tuxguitar-${finalAttrs.version}-linux-swt-amd64.tar.gz";
-    hash = "sha256-FD1+7jV69E9AfTczjD6DOGD+pPlscg4o8A9ADBUM9B4=";
+    hash = "sha256-wxiLqNc20/AROZZWghzbrUz/VK++fEIKyP5ipomy1Po=";
   };
 
   nativeBuildInputs = [
     makeWrapper
+    wrapGAppsHook3
   ];
+
+  dontWrapGApps = true;
 
   installPhase = ''
     mkdir -p $out/bin
@@ -34,9 +39,17 @@ stdenv.mkDerivation (finalAttrs: {
     ln -s $out/dist $out/bin/dist
     ln -s $out/lib $out/bin/lib
     ln -s $out/share $out/bin/share
+  '';
 
+  postFixup = ''
     wrapProgram $out/bin/tuxguitar \
-      --set JAVA "${jre}/bin/java" \
+      "''${gappsWrapperArgs[@]}" \
+      --prefix PATH : ${
+        lib.makeBinPath [
+          jre
+          which
+        ]
+      } \
       --prefix LD_LIBRARY_PATH : "$out/lib/:${
         lib.makeLibraryPath [
           swt

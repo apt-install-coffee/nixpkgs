@@ -3,14 +3,13 @@
   lib,
   rustPlatform,
   fetchFromGitHub,
-  Security,
-  SystemConfiguration,
+  apple-sdk_11,
   nixosTests,
   nix-update-script,
 }:
 
 let
-  version = "1.11.1";
+  version = "1.11.3";
 in
 rustPlatform.buildRustPackage {
   pname = "meilisearch";
@@ -20,7 +19,7 @@ rustPlatform.buildRustPackage {
     owner = "meilisearch";
     repo = "meiliSearch";
     rev = "refs/tags/v${version}";
-    hash = "sha256-SxmN6CDgS4QrCdJPF36RyljvKXXhCuYzaJnpqROSY5U=";
+    hash = "sha256-CVofke9tOGeDEhRHEt6EYwT52eeAYNqlEd9zPpmXQ2U=";
   };
 
   cargoBuildFlags = [ "--package=meilisearch" ];
@@ -39,10 +38,7 @@ rustPlatform.buildRustPackage {
 
   nativeBuildInputs = [ rustPlatform.bindgenHook ];
 
-  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin [
-    Security
-    SystemConfiguration
-  ];
+  buildInputs = lib.optional stdenv.hostPlatform.isDarwin apple-sdk_11;
 
   passthru = {
     updateScript = nix-update-script { };

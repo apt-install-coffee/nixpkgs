@@ -11,7 +11,8 @@ buildDotnetModule rec {
     sha256 = "sha256-2ulv//YV3OqrfFltgUCeDe4rOPC0qqJ+80/D2lIoih8=";
   };
 
-  nugetDeps = ./nuget.nix;
+  dotnet-sdk = dotnetCorePackages.sdk_6_0;
+  nugetDeps = ./nuget.json;
   projectFile = "Src/CommandLine/CommandLine.csproj";
 
   postFixup = if stdenv.hostPlatform.isLinux then ''

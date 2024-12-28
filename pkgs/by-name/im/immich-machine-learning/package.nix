@@ -17,11 +17,8 @@ python.pkgs.buildPythonApplication rec {
   src = "${immich.src}/machine-learning";
   pyproject = true;
 
-  postPatch = ''
-    substituteInPlace pyproject.toml --replace-fail 'fastapi-slim' 'fastapi'
-  '';
-
   pythonRelaxDeps = [
+    "pillow"
     "pydantic-settings"
   ];
 

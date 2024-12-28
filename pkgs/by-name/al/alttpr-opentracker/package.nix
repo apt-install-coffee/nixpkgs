@@ -28,9 +28,9 @@ buildDotnetModule rec {
 
   patches = [./remove-project.patch];
 
-  dotnet-runtime = dotnetCorePackages.runtime_6_0;
+  dotnet-sdk = dotnetCorePackages.sdk_6_0;
 
-  nugetDeps = ./deps.nix;
+  nugetDeps = ./deps.json;
 
   projectFile = "OpenTracker.sln";
   executables = ["OpenTracker"];

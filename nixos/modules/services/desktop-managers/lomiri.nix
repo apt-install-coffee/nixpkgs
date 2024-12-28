@@ -29,9 +29,13 @@ in
     (lib.mkIf cfg.basics {
       environment = {
         # To override the default keyboard layout in Lomiri
-        etc.${pkgs.lomiri.lomiri.passthru.etcLayoutsFile}.text = lib.strings.replaceStrings [ "," ] [
-          "\n"
-        ] config.services.xserver.xkb.layout;
+        etc.${pkgs.lomiri.lomiri.passthru.etcLayoutsFile}.text =
+          lib.strings.replaceStrings
+            [ "," ]
+            [
+              "\n"
+            ]
+            config.services.xserver.xkb.layout;
 
         pathsToLink = [
           # Data
@@ -79,7 +83,6 @@ in
           ])
           ++ (with pkgs.lomiri; [
             hfd-service
-            history-service
             libusermetrics
             lomiri
             lomiri-calculator-app
@@ -90,6 +93,8 @@ in
             lomiri-download-manager
             lomiri-filemanager-app
             lomiri-gallery-app
+            lomiri-history-service
+            lomiri-mediaplayer-app
             lomiri-polkit-agent
             lomiri-schemas # exposes some required dbus interfaces
             lomiri-session # wrappers to properly launch the session

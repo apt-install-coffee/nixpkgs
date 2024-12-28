@@ -3,6 +3,7 @@
   stdenv,
   fetchFromGitHub,
   buildNpmPackage,
+  nodejs_20,
   nix-update-script,
   pkg-config,
   xcbuild,
@@ -14,7 +15,7 @@
 }:
 buildNpmPackage rec {
   pname = "jellyfin-web";
-  version = "10.10.1";
+  version = "10.10.3";
 
   src =
     assert version == jellyfin.version;
@@ -22,15 +23,17 @@ buildNpmPackage rec {
       owner = "jellyfin";
       repo = "jellyfin-web";
       rev = "v${version}";
-      hash = "sha256-+f+chR00eDCVZvAGNDB61c0htsVvqFK62oZorW3Qdsg=";
+      hash = "sha256-xmy2cr6MJSen6Pok3Wde4mBcu5pM4qtGEBfqMpGdAxY=";
     };
+
+  nodejs = nodejs_20;  # does not build with 22
 
   postPatch = ''
     substituteInPlace webpack.common.js \
       --replace-fail "git describe --always --dirty" "echo ${src.rev}" \
   '';
 
-  npmDepsHash = "sha256-kL57KmBHmBwJEhsUciPaj826qdoSQxZXxtFNGkddGZk=";
+  npmDepsHash = "sha256-qzjniTbJRNeZ2WFu8RBjcdZR96nvGRHMERdEiELLufg=";
 
   preBuild = ''
     # using sass-embedded fails at executing node_modules/sass-embedded-linux-x64/dart-sass/src/dart

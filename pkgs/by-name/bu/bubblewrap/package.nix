@@ -1,25 +1,26 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, docbook_xsl
-, libxslt
-, meson
-, ninja
-, pkg-config
-, bash-completion
-, libcap
-, libselinux
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  docbook_xsl,
+  libxslt,
+  meson,
+  ninja,
+  pkg-config,
+  bash-completion,
+  libcap,
+  libselinux,
 }:
 
 stdenv.mkDerivation rec {
   pname = "bubblewrap";
-  version = "0.10.0";
+  version = "0.11.0";
 
   src = fetchFromGitHub {
     owner = "containers";
     repo = "bubblewrap";
     rev = "v${version}";
-    hash = "sha256-HYJoX7DnAwHCgxCzTYGJlc4RodbVP6hutK065AmGSl0=";
+    hash = "sha256-8IDMLQPeO576N1lizVudXUmTV6hNOiowjzRpEWBsZ+U=";
   };
 
   postPatch = ''

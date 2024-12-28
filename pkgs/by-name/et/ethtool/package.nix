@@ -1,18 +1,19 @@
-{ lib
-, stdenv
-, fetchurl
-, libmnl
-, pkg-config
-, writeScript
+{
+  lib,
+  stdenv,
+  fetchurl,
+  libmnl,
+  pkg-config,
+  writeScript,
 }:
 
 stdenv.mkDerivation rec {
   pname = "ethtool";
-  version = "6.9";
+  version = "6.11";
 
   src = fetchurl {
     url = "mirror://kernel/software/network/ethtool/ethtool-${version}.tar.xz";
-    sha256 = "sha256-pxsDVAEGYcXPF4vGBu1Q/LkYBc8Yl60OsoGDh6X9DNk=";
+    sha256 = "sha256-jZH1xyrj8lt+iNR4EnncsyD3HjAFiRQ3CxxXTJazEgI=";
   };
 
   nativeBuildInputs = [

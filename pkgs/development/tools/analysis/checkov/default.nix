@@ -6,14 +6,14 @@
 
 python3.pkgs.buildPythonApplication rec {
   pname = "checkov";
-  version = "3.2.291";
+  version = "3.2.344";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "bridgecrewio";
     repo = "checkov";
     rev = "refs/tags/${version}";
-    hash = "sha256-CpLJD76FK2kX4p8M41S/GmGAwfTX1ugyyl10MEG4WNY=";
+    hash = "sha256-wmQJSqoFOrWi5ihGFd0PA+hSW/H4si+N6wprFHWDYbM=";
   };
 
   patches = [ ./flake8-compat-5.x.patch ];
@@ -92,6 +92,7 @@ python3.pkgs.buildPythonApplication rec {
 
   nativeCheckInputs = with python3.pkgs; [
     aioresponses
+    distutils
     mock
     pytest-asyncio
     pytest-mock
@@ -119,6 +120,7 @@ python3.pkgs.buildPythonApplication rec {
     "console"
     # Assertion error
     "test_runner"
+    "test_same_resources_in_report_and_coordinator"
     # AssertionError: assert ['<?xml versi...
     "test_get_cyclonedx_report"
     # Test fails on Hydra

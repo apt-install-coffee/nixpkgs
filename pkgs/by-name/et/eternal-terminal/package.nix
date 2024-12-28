@@ -1,14 +1,15 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, cmake
-, gflags
-, libsodium
-, openssl
-, protobuf
-, zlib
-, catch2
-, darwin
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  cmake,
+  gflags,
+  libsodium,
+  openssl,
+  protobuf,
+  zlib,
+  catch2,
+  darwin,
 }:
 
 stdenv.mkDerivation rec {
@@ -32,8 +33,6 @@ stdenv.mkDerivation rec {
     openssl
     protobuf
     zlib
-  ] ++ lib.optionals stdenv.hostPlatform.isDarwin [
-    darwin.libutil
   ];
 
   preBuild = ''
@@ -58,7 +57,10 @@ stdenv.mkDerivation rec {
     homepage = "https://eternalterminal.dev/";
     changelog = "https://github.com/MisterTea/EternalTerminal/releases/tag/et-v${version}";
     license = licenses.asl20;
-    maintainers = with maintainers; [ dezgeg jshort ];
+    maintainers = with maintainers; [
+      dezgeg
+      jshort
+    ];
     platforms = platforms.linux ++ platforms.darwin;
   };
 }

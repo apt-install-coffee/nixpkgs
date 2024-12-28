@@ -1,18 +1,19 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, cmake
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  cmake,
 }:
 
 stdenv.mkDerivation rec {
   pname = "imath";
-  version = "3.1.11";
+  version = "3.1.12";
 
   src = fetchFromGitHub {
     owner = "AcademySoftwareFoundation";
     repo = "imath";
     rev = "v${version}";
-    sha256 = "sha256-Cnl0BTXUzkDvgLSNXJbh5ATczBdbxiwbS4J9L6N8sKI=";
+    sha256 = "sha256-r4FNyNsWdmpZrHOpSvaSUWRYhAU+qnW4lE5uYPKn7Mw=";
   };
 
   nativeBuildInputs = [ cmake ];

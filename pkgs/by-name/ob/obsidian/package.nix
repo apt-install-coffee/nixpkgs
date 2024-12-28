@@ -1,18 +1,19 @@
-{ stdenv
-, fetchurl
-, lib
-, makeWrapper
-, electron
-, makeDesktopItem
-, imagemagick
-, writeScript
-, undmg
-, unzip
-, commandLineArgs ? ""
+{
+  stdenv,
+  fetchurl,
+  lib,
+  makeWrapper,
+  electron,
+  makeDesktopItem,
+  imagemagick,
+  writeScript,
+  undmg,
+  unzip,
+  commandLineArgs ? "",
 }:
 let
   pname = "obsidian";
-  version = "1.7.6";
+  version = "1.7.7";
   appname = "Obsidian";
   meta = with lib; {
     description = "Powerful knowledge base that works on top of a local folder of plain text Markdown files";
@@ -20,13 +21,25 @@ let
     downloadPage = "https://github.com/obsidianmd/obsidian-releases/releases";
     mainProgram = "obsidian";
     license = licenses.obsidian;
-    maintainers = with maintainers; [ atila conradmearns zaninime qbit kashw2 w-lfchen ];
+    maintainers = with maintainers; [
+      atila
+      conradmearns
+      zaninime
+      qbit
+      kashw2
+      w-lfchen
+    ];
   };
 
-  filename = if stdenv.hostPlatform.isDarwin then "Obsidian-${version}.dmg" else "obsidian-${version}.tar.gz";
+  filename =
+    if stdenv.hostPlatform.isDarwin then "Obsidian-${version}.dmg" else "obsidian-${version}.tar.gz";
   src = fetchurl {
     url = "https://github.com/obsidianmd/obsidian-releases/releases/download/v${version}/${filename}";
-    hash = if stdenv.hostPlatform.isDarwin then "sha256-K7NLFbsTVNNH2VEXLiBM1KaG3fEWwaUkvxYh3vtKGvc=" else "sha256-5xkhm87eN36NmwG+t7SYnn20zT+ZELC7g2x+6/UGrHE=";
+    hash =
+      if stdenv.hostPlatform.isDarwin then
+        "sha256-vzYMTH1yaKxw1AwJOXVdzvKyQTkCMmx7NPPP/99xgMQ="
+      else
+        "sha256-6IHqBvZx2yxQAvADi3Ok5Le3ip2/c6qafQ3FSpPT0po=";
   };
 
   icon = fetchurl {
@@ -45,15 +58,29 @@ let
   };
 
   linux = stdenv.mkDerivation {
-    inherit pname version src desktopItem icon;
-    meta = meta // { platforms = [ "x86_64-linux" "aarch64-linux" ]; };
-    nativeBuildInputs = [ makeWrapper imagemagick ];
+    inherit
+      pname
+      version
+      src
+      desktopItem
+      icon
+      ;
+    meta = meta // {
+      platforms = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+    };
+    nativeBuildInputs = [
+      makeWrapper
+      imagemagick
+    ];
     installPhase = ''
       runHook preInstall
       mkdir -p $out/bin
       makeWrapper ${electron}/bin/electron $out/bin/obsidian \
         --add-flags $out/share/obsidian/app.asar \
-        --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform=wayland}}" \
+        --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform=wayland --enable-wayland-ime=true}}" \
         --add-flags ${lib.escapeShellArg commandLineArgs}
       install -m 444 -D resources/app.asar $out/share/obsidian/app.asar
       install -m 444 -D resources/obsidian.asar $out/share/obsidian/obsidian.asar
@@ -76,10 +103,24 @@ let
   };
 
   darwin = stdenv.mkDerivation {
-    inherit pname version src appname;
-    meta = meta // { platforms = [ "x86_64-darwin" "aarch64-darwin" ]; };
+    inherit
+      pname
+      version
+      src
+      appname
+      ;
+    meta = meta // {
+      platforms = [
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+    };
     sourceRoot = "${appname}.app";
-    nativeBuildInputs = [ makeWrapper undmg unzip ];
+    nativeBuildInputs = [
+      makeWrapper
+      undmg
+      unzip
+    ];
     installPhase = ''
       runHook preInstall
       mkdir -p $out/{Applications/${appname}.app,bin}

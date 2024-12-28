@@ -1,4 +1,11 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, ncurses, buildPackages, darwin }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  pkg-config,
+  ncurses,
+  buildPackages,
+}:
 
 stdenv.mkDerivation {
   pname = "mg";
@@ -17,7 +24,9 @@ stdenv.mkDerivation {
 
   enableParallelBuilding = true;
 
-  makeFlags = [ "PKG_CONFIG=${buildPackages.pkg-config}/bin/${buildPackages.pkg-config.targetPrefix}pkg-config" ];
+  makeFlags = [
+    "PKG_CONFIG=${buildPackages.pkg-config}/bin/${buildPackages.pkg-config.targetPrefix}pkg-config"
+  ];
 
   installPhase = ''
     install -m 555 -Dt $out/bin mg
@@ -25,7 +34,7 @@ stdenv.mkDerivation {
   '';
   nativeBuildInputs = [ pkg-config ];
 
-  buildInputs = [ ncurses ] ++ lib.optional stdenv.isDarwin [ darwin.libutil ];
+  buildInputs = [ ncurses ];
 
   meta = with lib; {
     description = "Micro GNU/emacs, a portable version of the mg maintained by the OpenBSD team";

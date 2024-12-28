@@ -1,11 +1,18 @@
-{ lib, buildRubyGem, ruby, writeScript, testers, bundler }:
+{
+  lib,
+  buildRubyGem,
+  ruby,
+  writeScript,
+  testers,
+  bundler,
+}:
 
 buildRubyGem rec {
   inherit ruby;
   name = "${gemName}-${version}";
   gemName = "bundler";
-  version = "2.5.16";
-  source.sha256 = "sha256-h7oDOPQNWSinmxqwZ4Z6Ns3lgTXQi2MmfvY5eVuVmDo=";
+  version = "2.5.22";
+  source.sha256 = "sha256-dj8w1ZjuWHQu6ikoWHVDXqciIY1N8UneNbzjfALOlo4=";
   dontPatchShebangs = true;
 
   postFixup = ''

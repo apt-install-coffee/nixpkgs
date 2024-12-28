@@ -1,35 +1,36 @@
-{ lib
-, stdenv
-, buildGoModule
-, fetchFromGitHub
-, fetchNpmDeps
-, cacert
-, git
-, go
-, enumer
-, mockgen
-, nodejs
-, npmHooks
-, nix-update-script
-, nixosTests
+{
+  lib,
+  stdenv,
+  buildGoModule,
+  fetchFromGitHub,
+  fetchNpmDeps,
+  cacert,
+  git,
+  go,
+  enumer,
+  mockgen,
+  nodejs,
+  npmHooks,
+  nix-update-script,
+  nixosTests,
 }:
 
 buildGoModule rec {
   pname = "evcc";
-  version = "0.131.5";
+  version = "0.131.12";
 
   src = fetchFromGitHub {
     owner = "evcc-io";
     repo = "evcc";
     rev = version;
-    hash = "sha256-CRqxxbPkcjswntMgGkIrPFEbnjI90sfTmG6D1eCo45w=";
+    hash = "sha256-wctSgB5NRuS1+g+MEiHDS4oyFVNdwP2WFJF5kj9nFig=";
   };
 
-  vendorHash = "sha256-x0EWFsR/O2Ztg39DL+yZx2ZDzJHADo2aPAeg/i+5KqM=";
+  vendorHash = "sha256-xravbTVzmS7loLKtzuT3Yw7FkEnDFLw+GrwnAVV36Yw=";
 
   npmDeps = fetchNpmDeps {
     inherit src;
-    hash = "sha256-4PBlN2pbr7dzZNQzh/P0kBlsg6ut2XPwsfFB132hWO0=";
+    hash = "sha256-AlwmMipGBnUSaqXxVBlC1c1IZ5utxLYx01T9byXOTrQ=";
   };
 
   nativeBuildInputs = [
@@ -69,15 +70,16 @@ buildGoModule rec {
 
   doCheck = !stdenv.hostPlatform.isDarwin; # darwin sandbox limitations around network access, access to /etc/protocols and likely more
 
-  checkFlags = let
-    skippedTests = [
-      # network access
-      "TestOctopusConfigParse"
-      "TestTemplates"
-      "TestOcpp"
-    ];
-  in
-  [ "-skip=^${lib.concatStringsSep "$|^" skippedTests}$" ];
+  checkFlags =
+    let
+      skippedTests = [
+        # network access
+        "TestOctopusConfigParse"
+        "TestTemplates"
+        "TestOcpp"
+      ];
+    in
+    [ "-skip=^${lib.concatStringsSep "$|^" skippedTests}$" ];
 
   passthru = {
     tests = {

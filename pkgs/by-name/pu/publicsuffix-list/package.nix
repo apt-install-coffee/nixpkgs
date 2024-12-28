@@ -1,14 +1,19 @@
-{ lib, stdenvNoCC, fetchFromGitHub, unstableGitUpdater }:
+{
+  lib,
+  stdenvNoCC,
+  fetchFromGitHub,
+  unstableGitUpdater,
+}:
 
 stdenvNoCC.mkDerivation {
   pname = "publicsuffix-list";
-  version = "0-unstable-2024-09-10";
+  version = "0-unstable-2024-12-06";
 
   src = fetchFromGitHub {
     owner = "publicsuffix";
     repo = "list";
-    rev = "fbcc4c495e8aed1fe0e90156e6b3796556eb6978";
-    hash = "sha256-L6TepLI91IWImX453GO8VNSSle75f0H1IZbFr2qepDA=";
+    rev = "d94154e5222aa000f70def82b9711df88b4612d9";
+    hash = "sha256-Cdrut2plOpItOdvgdYl7B7f9FqfVRzOmseUs9XAFnfM=";
   };
 
   dontBuild = true;

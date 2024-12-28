@@ -189,6 +189,14 @@ in {
       ];
     };
 
+    linux_6_12 = callPackage ../os-specific/linux/kernel/mainline.nix {
+      branch = "6.12";
+      kernelPatches = [
+        kernelPatches.bridge_stp_helper
+        kernelPatches.request_key_helper
+      ];
+    };
+
     linux_testing = let
       testing = callPackage ../os-specific/linux/kernel/mainline.nix {
         # A special branch that tracks the kernel under the release process
@@ -268,6 +276,7 @@ in {
     linux_6_1_hardened = hardenedKernelFor kernels.linux_6_1 { };
     linux_6_6_hardened = hardenedKernelFor kernels.linux_6_6 { };
     linux_6_11_hardened = hardenedKernelFor kernels.linux_6_11 { };
+    linux_6_12_hardened = hardenedKernelFor kernels.linux_6_12 { };
 
   } // lib.optionalAttrs config.allowAliases {
     linux_4_14 = throw "linux 4.14 was removed because it will reach its end of life within 23.11";
@@ -366,6 +375,8 @@ in {
 
     e1000e = if lib.versionOlder kernel.version "4.10" then  callPackage ../os-specific/linux/e1000e {} else null;
 
+    iio-utils = if lib.versionAtLeast kernel.version "4.1" then callPackage ../os-specific/linux/iio-utils { } else null;
+
     intel-speed-select = if lib.versionAtLeast kernel.version "5.3" then callPackage ../os-specific/linux/intel-speed-select { } else null;
 
     ipu6-drivers = callPackage ../os-specific/linux/ipu6-drivers {};
@@ -421,8 +432,8 @@ in {
     nvidia_x11_production  = nvidiaPackages.production;
     nvidia_x11_vulkan_beta = nvidiaPackages.vulkan_beta;
     nvidia_dc              = nvidiaPackages.dc;
-    nvidia_dc_520          = nvidiaPackages.dc_520;
     nvidia_dc_535          = nvidiaPackages.dc_535;
+    nvidia_dc_565          = nvidiaPackages.dc_565;
 
     # this is not a replacement for nvidia_x11*
     # only the opensource kernel driver exposed for hydra to build
@@ -564,6 +575,8 @@ in {
 
     xpadneo = callPackage ../os-specific/linux/xpadneo { };
 
+    yt6801 = callPackage ../os-specific/linux/yt6801 { };
+
     ithc = callPackage ../os-specific/linux/ithc { };
 
     ryzen-smu = callPackage ../os-specific/linux/ryzen-smu { };
@@ -611,8 +624,8 @@ in {
     xmm7360-pci = throw "Support for the XMM7360 WWAN card was added to the iosm kmod in mainline kernel version 5.18";
     amdgpu-pro = throw "amdgpu-pro was removed due to lack of maintenance"; # Added 2024-06-16
     kvdo = throw "kvdo was removed, because it was added to mainline in kernel version 6.9"; # Added 2024-07-08
-    system76-power = lib.warn "kernelPackages.system76-power is now pkgs.system76-power" pkgs.system76-power; # Added 2024-10-16
-    system76-scheduler = lib.warn "kernelPackages.system76-scheduler is now pkgs.system76-scheduler" pkgs.system76-scheduler; # Added 2024-10-16
+    system76-power = lib.warnOnInstantiate "kernelPackages.system76-power is now pkgs.system76-power" pkgs.system76-power; # Added 2024-10-16
+    system76-scheduler = lib.warnOnInstantiate "kernelPackages.system76-scheduler is now pkgs.system76-scheduler" pkgs.system76-scheduler; # Added 2024-10-16
     tuxedo-keyboard = self.tuxedo-drivers; # Added 2024-09-28
   });
 
@@ -626,6 +639,7 @@ in {
     linux_6_1 = recurseIntoAttrs (packagesFor kernels.linux_6_1);
     linux_6_6 = recurseIntoAttrs (packagesFor kernels.linux_6_6);
     linux_6_11 = recurseIntoAttrs (packagesFor kernels.linux_6_11);
+    linux_6_12 = recurseIntoAttrs (packagesFor kernels.linux_6_12);
   } // lib.optionalAttrs config.allowAliases {
     linux_4_14 = throw "linux 4.14 was removed because it will reach its end of life within 23.11"; # Added 2023-10-11
     linux_4_19 = throw "linux 4.19 was removed because it will reach its end of life within 24.11"; # Added 2024-09-21
@@ -666,6 +680,7 @@ in {
     linux_6_1_hardened = recurseIntoAttrs (packagesFor kernels.linux_6_1_hardened);
     linux_6_6_hardened = recurseIntoAttrs (packagesFor kernels.linux_6_6_hardened);
     linux_6_11_hardened = recurseIntoAttrs (packagesFor kernels.linux_6_11_hardened);
+    linux_6_12_hardened = recurseIntoAttrs (packagesFor kernels.linux_6_12_hardened);
 
     linux_zen = recurseIntoAttrs (packagesFor kernels.linux_zen);
     linux_lqx = recurseIntoAttrs (packagesFor kernels.linux_lqx);
@@ -691,10 +706,11 @@ in {
   packageAliases = {
     linux_default = packages.linux_6_6;
     # Update this when adding the newest kernel major version!
-    linux_latest = packages.linux_6_11;
-    linux_mptcp = throw "'linux_mptcp' has been moved to https://github.com/teto/mptcp-flake";
+    linux_latest = packages.linux_6_12;
     linux_rt_default = packages.linux_rt_5_15;
     linux_rt_latest = packages.linux_rt_6_6;
+  } // lib.optionalAttrs config.allowAliases {
+    linux_mptcp = throw "'linux_mptcp' has been moved to https://github.com/teto/mptcp-flake";
   };
 
   manualConfig = callPackage ../os-specific/linux/kernel/manual-config.nix {};

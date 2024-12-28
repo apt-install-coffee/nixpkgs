@@ -3,7 +3,7 @@
 , ruby
 , nodejs
 , writeText
-, nodePackages
+, neovim-node-client
 , python3
 , callPackage
 , neovimUtils
@@ -20,6 +20,14 @@ let
 
   wrapper = {
       extraName ? ""
+    # certain plugins need a custom configuration (available in passthru.initLua)
+    # to work with nix.
+    # if true, the wrapper automatically appends those snippets when necessary
+    , autoconfigure ? false
+
+    # append to PATH runtime deps of plugins
+    , autowrapRuntimeDeps ? false
+
     # should contain all args but the binary. Can be either a string or list
     , wrapperArgs ? []
     , withPython2 ? false
@@ -61,7 +69,7 @@ let
 
   stdenv.mkDerivation (finalAttrs:
   let
-    pluginsNormalized = neovimUtils.normalizePlugins plugins;
+    pluginsNormalized = neovimUtils.normalizePlugins finalAttrs.plugins;
 
     myVimPackage = neovimUtils.normalizedPluginsToVimPackage pluginsNormalized;
 
@@ -87,11 +95,19 @@ let
     packpathDirs.myNeovimPackages = myVimPackage;
     finalPackdir = neovimUtils.packDir packpathDirs;
 
+    luaPluginRC = let
+      op = acc: normalizedPlugin:
+           acc ++ lib.optional (finalAttrs.autoconfigure && normalizedPlugin.plugin.passthru ? initLua) normalizedPlugin.plugin.passthru.initLua;
+      in
+        lib.foldl' op [] pluginsNormalized;
+
     rcContent = ''
       ${luaRcContent}
     '' + lib.optionalString (neovimRcContent' != null) ''
       vim.cmd.source "${writeText "init.vim" neovimRcContent'}"
-    '';
+    '' +
+      lib.concatStringsSep "\n" luaPluginRC
+    ;
 
     getDeps = attrname: map (plugin: plugin.${attrname} or (_: [ ]));
 
@@ -108,7 +124,15 @@ let
     wrapperArgsStr = if lib.isString wrapperArgs then wrapperArgs else lib.escapeShellArgs wrapperArgs;
 
     generatedWrapperArgs = let
-      binPath = lib.makeBinPath (lib.optional finalAttrs.withRuby rubyEnv ++ lib.optional finalAttrs.withNodeJs nodejs);
+      op = acc: normalizedPlugin: acc ++ normalizedPlugin.plugin.runtimeDeps or [];
+
+      runtimeDeps = lib.foldl' op [] pluginsNormalized;
+
+      binPath = lib.makeBinPath (
+           lib.optional finalAttrs.withRuby rubyEnv
+        ++ lib.optional finalAttrs.withNodeJs nodejs
+        ++ lib.optionals finalAttrs.autowrapRuntimeDeps runtimeDeps
+        );
     in
 
       # vim accepts a limited number of commands so we join them all
@@ -155,7 +179,7 @@ let
       __structuredAttrs = true;
       dontUnpack = true;
       inherit viAlias vimAlias withNodeJs withPython3 withPerl withRuby;
-      inherit wrapRc providerLuaRc packpathDirs;
+      inherit autoconfigure autowrapRuntimeDeps wrapRc providerLuaRc packpathDirs;
       inherit python3Env rubyEnv;
       inherit wrapperArgs generatedWrapperArgs;
       luaRcContent = rcContent;
@@ -173,7 +197,7 @@ let
         ln -s ${finalAttrs.rubyEnv}/bin/neovim-ruby-host $out/bin/nvim-ruby
       ''
       + lib.optionalString finalAttrs.withNodeJs ''
-        ln -s ${nodePackages.neovim}/bin/neovim-node-host $out/bin/nvim-node
+        ln -s ${neovim-node-client}/bin/neovim-node-host $out/bin/nvim-node
       ''
       + lib.optionalString finalAttrs.withPerl ''
         ln -s ${perlEnv}/bin/perl $out/bin/nvim-perl
@@ -249,6 +273,13 @@ let
 
     # A Vim "package", see ':h packages'
     vimPackage = myVimPackage;
+
+    checkPhase = ''
+      runHook preCheck
+
+      $out/bin/nvim -i NONE -e +quitall!
+      runHook postCheck
+      '';
 
     passthru = {
       inherit providerLuaRc packpathDirs;

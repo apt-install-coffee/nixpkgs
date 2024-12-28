@@ -1,5 +1,5 @@
 {
-  fetchurl,
+  fetchFromGitHub,
   lib,
   stdenv,
   perl,
@@ -21,12 +21,17 @@
   postgresqlTestExtension,
   jitSupport,
   llvm,
+  buildPostgresqlExtension,
+  autoconf,
+  automake,
+  libtool,
+  which,
 }:
 
 let
   gdal = gdalMinimal;
 in
-stdenv.mkDerivation (finalAttrs: {
+buildPostgresqlExtension (finalAttrs: {
   pname = "postgis";
   version = "3.5.0";
 
@@ -35,14 +40,15 @@ stdenv.mkDerivation (finalAttrs: {
     "doc"
   ];
 
-  src = fetchurl {
-    url = "https://download.osgeo.org/postgis/source/postgis-${finalAttrs.version}.tar.gz";
-    hash = "sha256-ymmKIswrKzRnrE4GO0OihBPzAE3dUFvczddMVqZH9RA=";
+  src = fetchFromGitHub {
+    owner = "postgis";
+    repo = "postgis";
+    rev = "${finalAttrs.version}";
+    hash = "sha256-wh7Lav2vnKzGWuSvvMFvAaGV7ynD+KgPsFUgujdtzlA=";
   };
 
   buildInputs = [
     libxml2
-    postgresql
     geos
     proj
     gdal
@@ -51,8 +57,12 @@ stdenv.mkDerivation (finalAttrs: {
     pcre2.dev
   ] ++ lib.optional stdenv.hostPlatform.isDarwin libiconv;
   nativeBuildInputs = [
+    autoconf
+    automake
+    libtool
     perl
     pkg-config
+    which
   ] ++ lib.optional jitSupport llvm;
   dontDisableStatic = true;
 
@@ -68,33 +78,24 @@ stdenv.mkDerivation (finalAttrs: {
   # postgis config directory assumes /include /lib from the same root for json-c library
   env.NIX_LDFLAGS = "-L${lib.getLib json_c}/lib";
 
+  setOutputFlags = false;
   preConfigure = ''
-    sed -i 's@/usr/bin/file@${file}/bin/file@' configure
-    configureFlags="--datadir=$out/share/postgresql --datarootdir=$out/share/postgresql --bindir=$out/bin --docdir=$doc/share/doc/${finalAttrs.pname} --with-gdalconfig=${gdal}/bin/gdal-config --with-jsondir=${json_c.dev} --disable-extension-upgrades-install"
-
-    makeFlags="PERL=${perl}/bin/perl datadir=$out/share/postgresql pkglibdir=$out/lib bindir=$out/bin docdir=$doc/share/doc/${finalAttrs.pname}"
+    ./autogen.sh
   '';
-  postConfigure = ''
-    sed -i "s|@mkdir -p \$(DESTDIR)\$(PGSQL_BINDIR)||g ;
-            s|\$(DESTDIR)\$(PGSQL_BINDIR)|$prefix/bin|g
-            " \
-        "raster/loader/Makefile";
-    sed -i "s|\$(DESTDIR)\$(PGSQL_BINDIR)|$prefix/bin|g
-            " \
-        "raster/scripts/python/Makefile";
-    mkdir -p $out/bin
 
-    # postgis' build system assumes it is being installed to the same place as postgresql, and looks
-    # for the postgres binary relative to $PREFIX. We gently support this system using an illusion.
-    ln -s ${postgresql}/bin/postgres $out/bin/postgres
-  '';
+  configureFlags = [
+    "--with-gdalconfig=${gdal}/bin/gdal-config"
+    "--with-jsondir=${json_c.dev}"
+    "--disable-extension-upgrades-install"
+  ];
+
+  makeFlags = [
+    "PERL=${perl}/bin/perl"
+  ];
 
   doCheck = stdenv.hostPlatform.isLinux;
 
   preCheck = ''
-    substituteInPlace regress/run_test.pl --replace-fail "/share/contrib/postgis" "$out/share/postgresql/contrib/postgis"
-    substituteInPlace regress/Makefile --replace-fail 's,\$$libdir,$(REGRESS_INSTALLDIR)/lib,g' "s,\\$\$libdir,$PWD/regress/00-regress-install$out/lib,g" \
-      --replace-fail '$(REGRESS_INSTALLDIR)/share/contrib/postgis/*.sql' "$PWD/regress/00-regress-install$out/share/postgresql/contrib/postgis/*.sql"
     substituteInPlace doc/postgis-out.xml --replace-fail "http://docbook.org/xml/5.0/dtd/docbook.dtd" "${docbook5}/xml/dtd/docbook/docbookx.dtd"
     # The test suite hardcodes it to use /tmp.
     export PGIS_REG_TMPDIR="$TMPDIR/pgis_reg"
@@ -102,9 +103,6 @@ stdenv.mkDerivation (finalAttrs: {
 
   # create aliases for all commands adding version information
   postInstall = ''
-    # Teardown the illusory postgres used for building; see postConfigure.
-    rm $out/bin/postgres
-
     for prog in $out/bin/*; do # */
       ln -s $prog $prog-${finalAttrs.version}
     done
@@ -140,13 +138,7 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "https://postgis.net/";
     changelog = "https://git.osgeo.org/gitea/postgis/postgis/raw/tag/${finalAttrs.version}/NEWS";
     license = licenses.gpl2Plus;
-    maintainers =
-      with maintainers;
-      teams.geospatial.members
-      ++ [
-        marcweber
-        wolfgangwalther
-      ];
+    maintainers = with maintainers; teams.geospatial.members ++ [ marcweber ];
     inherit (postgresql.meta) platforms;
   };
 })

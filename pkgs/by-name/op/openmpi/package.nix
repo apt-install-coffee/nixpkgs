@@ -40,11 +40,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "openmpi";
-  version = "5.0.5";
+  version = "5.0.6";
 
   src = fetchurl {
     url = "https://www.open-mpi.org/software/ompi/v${lib.versions.majorMinor finalAttrs.version}/downloads/openmpi-${finalAttrs.version}.tar.bz2";
-    sha256 = "sha256-ZYjVfApL0pmiQQP04ZYFGynotV+9pJ4R1bPTIDCjJ3Y=";
+    sha256 = "sha256-vUGD/LxDR3wlR5m0Kd8abldsBC50otL4s31Tey/5gVc=";
   };
 
   postPatch = ''
@@ -85,6 +85,7 @@ stdenv.mkDerivation (finalAttrs: {
       zlib
       libevent
       hwloc
+      prrte
     ]
     ++ lib.optionals stdenv.hostPlatform.isLinux [
       libnl
@@ -92,7 +93,6 @@ stdenv.mkDerivation (finalAttrs: {
       pmix
       ucx
       ucc
-      prrte
     ]
     ++ lib.optionals cudaSupport [ cudaPackages.cuda_cudart ]
     ++ lib.optionals (stdenv.hostPlatform.isLinux || stdenv.hostPlatform.isFreeBSD) [ rdma-core ]
@@ -119,7 +119,7 @@ stdenv.mkDerivation (finalAttrs: {
     "--with-pmix=${lib.getDev pmix}"
     "--with-pmix-libdir=${lib.getLib pmix}/lib"
     # Puts a "default OMPI_PRTERUN" value to mpirun / mpiexec executables
-    (lib.withFeatureAs stdenv.hostPlatform.isLinux "prrte" (lib.getBin prrte))
+    (lib.withFeatureAs true "prrte" (lib.getBin prrte))
     (lib.withFeature enableSGE "sge")
     (lib.enableFeature enablePrefix "mpirun-prefix-by-default")
     # TODO: add UCX support, which is recommended to use with cuda for the most robust OpenMPI build

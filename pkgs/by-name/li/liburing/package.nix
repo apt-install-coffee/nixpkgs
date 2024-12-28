@@ -6,13 +6,13 @@
 
 stdenv.mkDerivation rec {
   pname = "liburing";
-  version = "2.7";
+  version = "2.8";
 
   src = fetchFromGitHub {
     owner = "axboe";
     repo = "liburing";
     rev = "refs/tags/liburing-${version}";
-    hash = "sha256-WhNlO2opPM7v4LOLWpmzPv31++zmn5Hmb6Su9IQBDH8=";
+    hash = "sha256-10zmoMDzO41oNRVXE/6FzDGPVRVJTJTARVUmc1b7f+o=";
   };
 
   separateDebugInfo = true;
@@ -42,9 +42,7 @@ stdenv.mkDerivation rec {
   postInstall = ''
     # Always builds both static and dynamic libraries, so we need to remove the
     # libraries that don't match stdenv type.
-    rm $out/lib/liburing*${
-      if stdenv.hostPlatform.isStatic then ".so*" else ".a"
-    }
+    rm $out/lib/liburing*${if stdenv.hostPlatform.isStatic then ".so*" else ".a"}
 
     # Copy the examples into $bin. Most reverse dependency of
     # this package should reference only the $out output
